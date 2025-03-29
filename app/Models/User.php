@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', 
+        'profile_picture', 
+        'bio'
     ];
 
     /**
@@ -41,4 +44,40 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'lecturer_id');
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function forumTopics()
+    {
+        return $this->hasMany(ForumTopic::class);
+    }
+
+    public function forumReplies()
+    {
+        return $this->hasMany(ForumReply::class);
+    }
+
+    // Role-based methods
+    public function isLecturer()
+    {
+        return $this->role === 'lecturer';
+    }
+
+    public function isStudent()
+    {
+        return $this->role === 'student';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
 }

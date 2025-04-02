@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->string('video_path');
-            $table->integer('duration')->nullable(); // in seconds
+            $table->integer('duration')->nullable();
             $table->integer('order')->default(0);
             $table->boolean('is_preview')->default(false);
             $table->timestamps();

@@ -75,12 +75,10 @@ class CourseController extends Controller
      */
     public function show($id)
     {
+        $course = Course::findOrFail($id);
         $course->load('videos');
-        $isEnrolled = Auth::check() 
-            ? Auth::user()->enrollments()->where('course_id', $course->id)->exists()
-            : false;
 
-        return view('courses.show', compact('course', 'isEnrolled'));
+        return view('courses.show', compact('course'));
     }
 
     /**
@@ -91,6 +89,7 @@ class CourseController extends Controller
      */
     public function edit($id)
     {
+        $course = Course::findOrFail($id);
         $this->authorize('update', $course);
 
         return view('courses.edit', compact('course'));
@@ -105,6 +104,7 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $course = Course::findOrFail($id);
         $this->authorize('update', $course);
 
         $validatedData = $request->validate([
@@ -138,6 +138,7 @@ class CourseController extends Controller
      */
     public function destroy($id)
     {
+        $course = Course::findOrFail($id);
         $this->authorize('delete', $course);
 
         // Delete thumbnail if exists

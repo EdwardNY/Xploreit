@@ -78,7 +78,14 @@ class CourseController extends Controller
         $course = Course::findOrFail($id);
         $course->load('videos');
 
-        return view('courses.show', compact('course'));
+        if ($course->is_published || (Auth::check() && Auth::id() === $course->lecturer_id)) {
+            $isEnrolled = Auth::check() && $course->isUserEnrolled(Auth::id());
+            $isLecturer = Auth::check() && Auth::id() === $course->lecturer_id;
+            
+            return view('courses.show', compact('course', 'isEnrolled', 'isLecturer'));
+        }
+        
+        abort(404);
     }
 
     /**

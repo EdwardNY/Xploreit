@@ -59,3 +59,26 @@ Route::prefix('courses/{course}/forum')->name('forum.')->group(function () {
     Route::delete('/topics/{topic}/replies/{reply}', [ForumReplyController::class, 'destroy'])->name('replies.destroy');
     Route::patch('/topics/{topic}/replies/{reply}/solution', [ForumReplyController::class, 'toggleSolution'])->name('replies.solution');
 });
+
+Route::get('/my-courses', [EnrollmentController::class, 'index'])->name('enrollments.index');
+Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('enrollments.store');
+Route::delete('/courses/{course}/enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
+Route::get('/courses/{course}/students', [EnrollmentController::class, 'showEnrolledStudents'])->name('courses.enrolled-students');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+});
+
+Route::middleware(['auth', 'role:lecturer,admin'])->prefix('lecturer')->name('lecturer.')->group(function () {
+    Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/courses', [LecturerController::class, 'courses'])->name('courses');
+    Route::get('/students', [LecturerController::class, 'students'])->name('students');
+});
+
+Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/courses', [StudentController::class, 'courses'])->name('courses');
+});

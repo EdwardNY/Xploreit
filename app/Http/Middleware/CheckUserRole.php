@@ -30,5 +30,7 @@ class CheckUserRole
         // Redirect or show unauthorized access message
         return redirect('home')->with('error', 'Unauthorized access');
 
+        
+
     }
 }

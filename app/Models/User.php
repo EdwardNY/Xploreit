@@ -55,6 +55,13 @@ class User extends Authenticatable
         return $this->hasMany(Enrollment::class);
     }
 
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments')
+            ->withTimestamp('enrolled_at')
+            ->withTimestamps();
+    }
+
     public function forumTopics()
     {
         return $this->hasMany(ForumTopic::class);
@@ -81,4 +88,8 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function createdCourses()
+    {
+        return $this->hasMany(Course::class, 'lecturer_id');
+    }
 }

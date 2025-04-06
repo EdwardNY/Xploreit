@@ -31,6 +31,18 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function enrolledStudents()
+    {
+        return $this->belongsToMany(User::class, 'enrollments')
+            ->withTimestamp('enrolled_at')
+            ->withTimestamps();
+    }
+
+    public function isUserEnrolled($userId)
+    {
+        return $this->enrollments()->where('user_id', $userId)->exists();
+    }
+
     public function forumTopics()
     {
         return $this->hasMany(ForumTopic::class);

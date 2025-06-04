@@ -15,12 +15,41 @@ use App\Http\Controllers\Auth\RegisterController;
 */
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
-Route::resource('courses', CourseController::class);
+Route::resource('courses', App\Http\Controllers\CourseController::class);
 
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/topics', [App\Http\Controllers\ForumTopicController::class, 'index'])->name('topics.index');
+//Route::get('/topics/create/', [App\Http\Controllers\ForumTopicController::class, 'create'])->name('topics.create');
+Route::get('/topics/create/{course}', [App\Http\Controllers\ForumTopicController::class, 'create'])->name('topics.create');
+Route::post('/topics', [App\Http\Controllers\ForumTopicController::class, 'store'])->name('topics.store');
+Route::get('/topics/{topic}/edit', [App\Http\Controllers\ForumTopicController::class, 'edit'])->name('topics.edit');
+Route::get('/topics/{course}/{topic}', [App\Http\Controllers\ForumTopicController::class, 'show'])->name('topics.show');
+Route::put('/topics/{topic}', [App\Http\Controllers\ForumTopicController::class, 'update'])->name('topics.update');
+Route::delete('/topics/{topic}', [App\Http\Controllers\ForumTopicController::class, 'destroy'])->name('topics.destroy');
+Route::patch('/topics/{topic}/pin', [App\Http\Controllers\ForumTopicController::class, 'togglePin'])->name('toggle-pin');
+Route::patch('/topics/{topic}/lock', [App\Http\Controllers\ForumTopicController::class, 'toggleLock'])->name('toggle-lock');
+
+// Route::get('/topics/{course}', [App\Http\Controllers\ForumTopicController::class, 'index'])->name('topics.index');
+// Route::get('/topics/create/{course}', [App\Http\Controllers\ForumTopicController::class, 'create'])->name('topics.create');
+// Route::post('/topics/{course}', [App\Http\Controllers\ForumTopicController::class, 'store'])->name('topics.store');
+// Route::get('/topics/{course}/{topic}', [App\Http\Controllers\ForumTopicController::class, 'show'])->name('topics.show');
+// Route::get('/topics/{course}/{topic}/edit', [App\Http\Controllers\ForumTopicController::class, 'edit'])->name('topics.edit');
+// Route::put('/topics/{course}/{topic}', [App\Http\Controllers\ForumTopicController::class, 'update'])->name('topics.update');
+// Route::delete('/topics/{course}/{topic}', [App\Http\Controllers\ForumTopicController::class, 'destroy'])->name('topics.destroy');
+// Route::patch('/topics/{course}/{topic}/pin', [App\Http\Controllers\ForumTopicController::class, 'togglePin'])->name('toggle-pin');
+// Route::patch('/topics/{course}/{topic}/lock', [App\Http\Controllers\ForumTopicController::class, 'toggleLock'])->name('toggle-lock');
+
+// Replies
+Route::post('/topics/{topic}/replies', [App\Http\Controllers\ForumReplyController::class, 'store'])->name('replies.store');
+Route::get('/topics/{topic}/replies/{reply}/edit', [App\Http\Controllers\ForumReplyController::class, 'edit'])->name('replies.edit');
+Route::put('/topics/{topic}/replies/{reply}', [App\Http\Controllers\ForumReplyController::class, 'update'])->name('replies.update');
+Route::delete('/topics/{topic}/replies/{reply}', [App\Http\Controllers\ForumReplyController::class, 'destroy'])->name('forum.replies.destroy');
+Route::patch('/topics/{topic}/replies/{reply}/solution', [App\Http\Controllers\ForumReplyController::class, 'toggleSolution'])->name('replies.toggle-solution');
 
 Auth::routes();
 
@@ -33,52 +62,34 @@ Route::get('/courses/{course}/edit', [App\Http\Controllers\CourseController::cla
 Route::put('/courses/{course}', [App\Http\Controllers\CourseController::class, 'update'])->name('courses.update');
 Route::delete('/courses/{course}', [App\Http\Controllers\CourseController::class, 'destroy'])->name('courses.destroy');
 
-Route::get('/courses/{course}/videos/create', [VideoController::class, 'create'])->name('videos.create');
-Route::post('/courses/{course}/videos', [VideoController::class, 'store'])->name('videos.store');
-Route::get('/courses/{course}/videos/{video}', [VideoController::class, 'show'])->name('videos.show');
-Route::get('/courses/{course}/videos/{video}/edit', [VideoController::class, 'edit'])->name('videos.edit');
-Route::put('/courses/{course}/videos/{video}', [VideoController::class, 'update'])->name('videos.update');
-Route::delete('/courses/{course}/videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
+Route::get('/courses/{course}/videos/create', [App\Http\Controllers\VideoController::class, 'create'])->name('videos.create');
+Route::post('/courses/{course}/videos', [App\Http\Controllers\VideoController::class, 'store'])->name('videos.store');
+Route::get('/courses/{course}/videos/{video}', [App\Http\Controllers\VideoController::class, 'show'])->name('videos.show');
+Route::get('/courses/{course}/videos/{video}/edit', [App\Http\Controllers\VideoController::class, 'edit'])->name('videos.edit');
+Route::put('/courses/{course}/videos/{video}', [App\Http\Controllers\VideoController::class, 'update'])->name('videos.update');
+Route::delete('/courses/{course}/videos/{video}', [App\Http\Controllers\VideoController::class, 'destroy'])->name('videos.destroy');
 
-Route::prefix('courses/{course}/forum')->name('forum.')->group(function () {
-    // Topics
-    Route::get('/', [ForumTopicController::class, 'index'])->name('topics.index');
-    Route::get('/topics/create', [ForumTopicController::class, 'create'])->name('topics.create');
-    Route::post('/topics', [ForumTopicController::class, 'store'])->name('topics.store');
-    Route::get('/topics/{topic}', [ForumTopicController::class, 'show'])->name('topics.show');
-    Route::get('/topics/{topic}/edit', [ForumTopicController::class, 'edit'])->name('topics.edit');
-    Route::put('/topics/{topic}', [ForumTopicController::class, 'update'])->name('topics.update');
-    Route::delete('/topics/{topic}', [ForumTopicController::class, 'destroy'])->name('topics.destroy');
-    Route::patch('/topics/{topic}/pin', [ForumTopicController::class, 'togglePin'])->name('topics.pin');
-    Route::patch('/topics/{topic}/lock', [ForumTopicController::class, 'toggleLock'])->name('topics.lock');
-    
-    // Replies
-    Route::post('/topics/{topic}/replies', [ForumReplyController::class, 'store'])->name('replies.store');
-    Route::get('/topics/{topic}/replies/{reply}/edit', [ForumReplyController::class, 'edit'])->name('replies.edit');
-    Route::put('/topics/{topic}/replies/{reply}', [ForumReplyController::class, 'update'])->name('replies.update');
-    Route::delete('/topics/{topic}/replies/{reply}', [ForumReplyController::class, 'destroy'])->name('replies.destroy');
-    Route::patch('/topics/{topic}/replies/{reply}/solution', [ForumReplyController::class, 'toggleSolution'])->name('replies.solution');
-});
-
-Route::get('/my-courses', [EnrollmentController::class, 'index'])->name('enrollments.index');
-Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('enrollments.store');
-Route::delete('/courses/{course}/enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
-Route::get('/courses/{course}/students', [EnrollmentController::class, 'showEnrolledStudents'])->name('courses.enrolled-students');
+Route::get('/my-courses', [App\Http\Controllers\EnrollmentController::class, 'index'])->name('enrollments.index');
+Route::post('/courses/{course}/enroll', [App\Http\Controllers\EnrollmentController::class, 'store'])->name('enrollments.store');
+Route::delete('/courses/{course}/enrollments/{enrollment}', [App\Http\Controllers\EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
+Route::get('/courses/{course}/students', [App\Http\Controllers\EnrollmentController::class, 'showEnrolledStudents'])->name('courses.enrolled-students');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password');
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/change-password', [App\Http\Controllers\ProfileController::class, 'changePassword'])->name('profile.change-password');
 });
 
 Route::middleware(['auth', 'role:lecturer,admin'])->prefix('lecturer')->name('lecturer.')->group(function () {
-    Route::get('/dashboard', [LecturerController::class, 'dashboard'])->name('dashboard');
-    Route::get('/courses', [LecturerController::class, 'courses'])->name('courses');
-    Route::get('/students', [LecturerController::class, 'students'])->name('students');
+    Route::get('/dashboard', [App\Http\Controllers\LecturerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/courses', [App\Http\Controllers\LecturerController::class, 'courses'])->name('courses');
+    Route::get('/students', [App\Http\Controllers\LecturerController::class, 'students'])->name('students');
 });
 
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
-    Route::get('/courses', [StudentController::class, 'courses'])->name('courses');
+    Route::get('/dashboard', [App\Http\Controllers\StudentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/courses', [App\Http\Controllers\StudentController::class, 'courses'])->name('courses');
 });
+
+

@@ -62,12 +62,12 @@ class ForumReplyPolicy
         }
 
         $course = \App\Models\Course::findOrFail($courseId);
-        
+
         if ($course->lecturer_id === $user->id) {
             return true;
         }
-        
-        return $user->enrollments()->where('course_id', $courseId)->exists();
+
+        return true;
     }
 
     /**
@@ -82,8 +82,8 @@ class ForumReplyPolicy
         if ($forumReply->topic->is_locked) {
             return false;
         }
-        
-        
+
+
         return $user->id === $forumReply->user_id;
     }
 
@@ -96,8 +96,8 @@ class ForumReplyPolicy
      */
     public function delete(User $user, ForumReply $forumReply)
     {
-        return $user->id === $forumReply->user_id || 
-        $user->id === $forumReply->topic->user_id || 
+        return $user->id === $forumReply->user_id ||
+        $user->id === $forumReply->topic->user_id ||
         $user->id === $forumReply->topic->course->lecturer_id;
 
     }
@@ -129,7 +129,7 @@ class ForumReplyPolicy
     public function markAsSolution(User $user, ForumReply $forumReply)
     {
         // Only topic author or course lecturer can mark as solution
-        return $user->id === $forumReply->topic->user_id || 
+        return $user->id === $forumReply->topic->user_id ||
                $user->id === $forumReply->topic->course->lecturer_id;
     }
 }

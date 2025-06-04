@@ -18,11 +18,14 @@ class ForumReplyController extends Controller
     public function store(Request $request, Course $course, ForumTopic $topic)
     {
         $this->authorize('create', [ForumReply::class, null, $topic->id]);
-        
+
         $validated = $request->validate([
             'content' => 'required|string',
-            'parent_id' => 'nullable|exists:forum_replies,id'
+            'parent_id' => 'nullable|exists:forum_replies,id',
+            'course_id' => 'required|exists:courses,id'
         ]);
+
+        $course = Course::findOrFail($validated['course_id']);
 
         $reply = new ForumReply([
             'content' => $validated['content'],
@@ -33,7 +36,7 @@ class ForumReplyController extends Controller
 
         $reply->save();
 
-        return redirect()->route('forum.topics.show', ['course' => $course, 'topic' => $topic])
+        return redirect()->route('topics.show', ['course' => $course, 'topic' => $topic])
             ->with('success', 'Reply posted successfully!');
     }
 
@@ -46,7 +49,7 @@ class ForumReplyController extends Controller
     public function update(Request $request, Course $course, ForumTopic $topic, ForumReply $reply)
     {
         $this->authorize('update', $reply);
-        
+
         $validated = $request->validate([
             'content' => 'required|string'
         ]);
@@ -62,24 +65,24 @@ class ForumReplyController extends Controller
     public function destroy(Course $course, ForumTopic $topic, ForumReply $reply)
     {
         $this->authorize('delete', $reply);
-        
+
         $reply->delete();
 
-        return redirect()->route('forum.topics.show', ['course' => $course, 'topic' => $topic])
+        return redirect()->route('topics.show', ['course' => $course, 'topic' => $topic])
             ->with('success', 'Reply deleted successfully!');
     }
 
     public function toggleSolution(Course $course, ForumTopic $topic, ForumReply $reply)
     {
         $this->authorize('markAsSolution', $reply);
-        
+
         // If this reply is being marked as solution, unmark any existing solution
         if (!$reply->is_solution) {
             ForumReply::where('forum_topic_id', $topic->id)
                 ->where('is_solution', true)
                 ->update(['is_solution' => false]);
         }
-        
+
         $reply->update([
             'is_solution' => !$reply->is_solution
         ]);

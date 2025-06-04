@@ -42,11 +42,10 @@ class ForumTopicPolicy
      */
     public function create(User $user)
     {
-        if ($course->lecturer_id === $user->id) {
-            return true;
-        }
-        
-        return $user->enrollments()->where('course_id', $course->id)->exists();
+        // if ($course->lecturer_id === $user->id) {
+        //     return true;
+        // }
+        return true;
     }
 
     /**

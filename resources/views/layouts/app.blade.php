@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'XploreIt') }}</title>
+    <title>XploreIt</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -88,44 +88,13 @@
             color: var(--white);
         }
 
-        /* Navigation Menu */
-        .main-menu {
-            display: flex;
-            align-items: center;
-            list-style: none;
-        }
-
-        .main-menu li {
-            position: relative;
-        }
-
-        .main-menu li a {
-            color: var(--white);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            display: block;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .main-menu li a:hover {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Mobile menu toggle */
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
         /* Search form */
         .search-form {
             display: flex;
-            margin: 0 1rem;
+            flex: 1;
+            justify-content: center;
+            margin: 0 2rem;
+            max-width: 600px;
         }
 
         .search-input {
@@ -133,8 +102,10 @@
             border: none;
             background-color: rgba(255, 255, 255, 0.2);
             color: var(--white);
-            padding: 0.5rem 1rem;
-            min-width: 200px;
+            padding: 0.7rem 1.5rem;
+            width: 100%;
+            min-width: 400px; /* Increased minimum width */
+            font-size: 1rem;
         }
 
         .search-input::placeholder {
@@ -466,7 +437,6 @@
             }
 
             .search-form {
-                order: 3;
                 width: 100%;
                 margin: 1rem 0 0;
             }
@@ -481,24 +451,6 @@
                 padding: 1rem;
                 flex-direction: column;
                 align-items: flex-start;
-            }
-
-            .menu-toggle {
-                display: block;
-                position: absolute;
-                right: 1rem;
-                top: 1rem;
-            }
-
-            .main-menu {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                padding: 1rem 0;
-            }
-
-            .main-menu.active {
-                display: flex;
             }
 
             .user-dropdown {
@@ -533,7 +485,7 @@
     <div id="app">
         <!-- Simplified Header -->
         <header>
-            <a href="{{ url('/') }}" class="logo">
+            <a href="{{ route('courses.index') }}" class="logo">
                 <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="50" cy="50" r="45" stroke="white" stroke-width="4" fill="none"/>
                     <circle cx="50" cy="50" r="20" stroke="white" stroke-width="4" fill="none"/>
@@ -542,23 +494,16 @@
                     <line x1="10" y1="50" x2="30" y2="50" stroke="white" stroke-width="4"/>
                     <line x1="70" y1="50" x2="90" y2="50" stroke="white" stroke-width="4"/>
                 </svg>
-                <span class="logo-text">{{ config('app.name', 'XploreIt') }}</span>
+                <span class="logo-text">XploreIt</span>
             </a>
 
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Navigation Menu -->
-            <ul class="main-menu" id="mainMenu">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ url('/courses') }}">Courses</a></li>
-                <li><a href="{{ url('/forums') }}">Forums</a></li>
-            </ul>
-
             <!-- Search Form -->
-            <form class="search-form">
-                <input type="search" class="search-input" placeholder="Search for courses...">
+            <form class="search-form" method="GET" action="{{ route('courses.index') }}">
+                <input type="search"
+                       class="search-input"
+                       name="search"
+                       value="{{ request('search') }}"
+                       placeholder="Search for courses...">
                 <button type="submit" class="search-button">
                     <i class="fas fa-search"></i>
                 </button>
@@ -577,10 +522,6 @@
                         {{ Auth::user()->name }}
                     </button>
                     <div class="user-dropdown-content">
-                        <a href="{{ url('/dashboard') }}">
-                            <i class="fas fa-tachometer-alt me-1"></i> Dashboard
-                        </a>
-
                         <a href="{{ url('/profile') }}">
                             <i class="fas fa-user me-1"></i> My Profile
                         </a>
@@ -793,71 +734,79 @@
         </div>
     </div>
 
-    <!-- JavaScript for mobile menu toggle and modals -->
+    <!-- JavaScript for modals -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            const menuToggle = document.getElementById('menuToggle');
-            const mainMenu = document.getElementById('mainMenu');
-
-            menuToggle.addEventListener('click', function() {
-                mainMenu.classList.toggle('active');
-            });
-
             // Login modal
             const loginBtn = document.getElementById('loginBtn');
             const loginModal = document.getElementById('loginModal');
             const closeLoginModal = document.getElementById('closeLoginModal');
 
-            loginBtn.addEventListener('click', function() {
-                loginModal.classList.add('active');
-            });
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    loginModal.classList.add('active');
+                });
+            }
 
-            closeLoginModal.addEventListener('click', function() {
-                loginModal.classList.remove('active');
-            });
+            if (closeLoginModal) {
+                closeLoginModal.addEventListener('click', function() {
+                    loginModal.classList.remove('active');
+                });
+            }
 
             // Register modal
             const registerBtn = document.getElementById('registerBtn');
             const registerModal = document.getElementById('registerModal');
             const closeRegisterModal = document.getElementById('closeRegisterModal');
 
-            registerBtn.addEventListener('click', function() {
-                registerModal.classList.add('active');
-            });
+            if (registerBtn) {
+                registerBtn.addEventListener('click', function() {
+                    registerModal.classList.add('active');
+                });
+            }
 
-            closeRegisterModal.addEventListener('click', function() {
-                registerModal.classList.remove('active');
-            });
+            if (closeRegisterModal) {
+                closeRegisterModal.addEventListener('click', function() {
+                    registerModal.classList.remove('active');
+                });
+            }
 
             // Switch between modals
             const switchToRegister = document.getElementById('switchToRegister');
             const switchToLogin = document.getElementById('switchToLogin');
 
-            switchToRegister.addEventListener('click', function(e) {
-                e.preventDefault();
-                loginModal.classList.remove('active');
-                registerModal.classList.add('active');
-            });
+            if (switchToRegister) {
+                switchToRegister.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    loginModal.classList.remove('active');
+                    registerModal.classList.add('active');
+                });
+            }
 
-            switchToLogin.addEventListener('click', function(e) {
-                e.preventDefault();
-                registerModal.classList.remove('active');
-                loginModal.classList.add('active');
-            });
+            if (switchToLogin) {
+                switchToLogin.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    registerModal.classList.remove('active');
+                    loginModal.classList.add('active');
+                });
+            }
 
             // Close modals when clicking outside
-            loginModal.addEventListener('click', function(e) {
-                if (e.target === loginModal) {
-                    loginModal.classList.remove('active');
-                }
-            });
+            if (loginModal) {
+                loginModal.addEventListener('click', function(e) {
+                    if (e.target === loginModal) {
+                        loginModal.classList.remove('active');
+                    }
+                });
+            }
 
-            registerModal.addEventListener('click', function(e) {
-                if (e.target === registerModal) {
-                    registerModal.classList.remove('active');
-                }
-            });
+            if (registerModal) {
+                registerModal.addEventListener('click', function(e) {
+                    if (e.target === registerModal) {
+                        registerModal.classList.remove('active');
+                    }
+                });
+            }
         });
     </script>
 

@@ -45,6 +45,7 @@ class ForumTopicController extends Controller
 
     public function create(Course $course)
     {
+
         $this->authorize('create', [ForumTopic::class, $course]);
         return view('forum.topics.create', compact('course'));
     }
@@ -100,12 +101,11 @@ class ForumTopicController extends Controller
 
     public function destroy(Course $course, ForumTopic $topic)
     {
+        $course = $topic->course;
         $this->authorize('delete', $topic);
-
         $topic->delete();
 
-        return redirect()->route('topics.index', $course)
-            ->with('success', 'Topic deleted successfully!');
+        return redirect()->route('courses.show', $course)->with('success', 'Topic deleted successfully!');
     }
 
     public function togglePin(Course $course, ForumTopic $topic)

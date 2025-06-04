@@ -9,7 +9,7 @@
         </div>
         <div class="col-md-4 text-end">
             @can('create', [App\Models\ForumTopic::class, $course])
-                <a href="{{ route('topics.create', $course) }}" class="btn btn-primary">
+                <a href="{{ route('topics.create', ['course' => $course->id]) }}" class="btn btn-primary">
                     <i class="fas fa-plus-circle"></i> New Topic
                 </a>
             @endcan

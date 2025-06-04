@@ -64,12 +64,12 @@ class ForumReplyController extends Controller
 
     public function destroy(Course $course, ForumTopic $topic, ForumReply $reply)
     {
+        $course = $topic->course;
         $this->authorize('delete', $reply);
 
         $reply->delete();
-
-        return redirect()->route('topics.show', ['course' => $course, 'topic' => $topic])
-            ->with('success', 'Reply deleted successfully!');
+        // redirect()->route('topics.show', ['course' => $course, 'topic' => $topic])
+        return back()->with('success', 'Reply deleted successfully!');
     }
 
     public function toggleSolution(Course $course, ForumTopic $topic, ForumReply $reply)

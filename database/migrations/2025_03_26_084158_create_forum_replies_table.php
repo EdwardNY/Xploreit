@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('parent_id')->nullable()->constrained('forum_replies')->onDelete('cascade');
             $table->boolean('is_solution')->default(false);
             $table->timestamps();
-        });
+        })
     }
 
     /**

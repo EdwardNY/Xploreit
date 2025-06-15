@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     protected $fillable = [
-        'title', 
-        'description', 
-        'lecturer_id', 
-        'thumbnail', 
+        'title',
+        'description',
+        'lecturer_id',
+        'thumbnail',
         'is_published'
     ];
 
@@ -24,23 +24,6 @@ class Course extends Model
     public function videos()
     {
         return $this->hasMany(Video::class);
-    }
-
-    public function enrollments()
-    {
-        return $this->hasMany(Enrollment::class);
-    }
-
-    public function enrolledStudents()
-    {
-        return $this->belongsToMany(User::class, 'enrollments')
-            ->withTimestamp('enrolled_at')
-            ->withTimestamps();
-    }
-
-    public function isUserEnrolled($userId)
-    {
-        return $this->enrollments()->where('user_id', $userId)->exists();
     }
 
     public function forumTopics()

@@ -33,7 +33,7 @@
                 <div class="bg-light text-center py-5 mb-4">No Image</div>
             @endif
 
-            @if(auth()->check() && !$isEnrolled && auth()->user()->role === 'student')
+            {{-- @if(auth()->check() && auth()->user()->role === 'student')
                 <form action="{{ route('enrollments.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="course_id" value="{{ $course->id }}">
@@ -41,9 +41,9 @@
                 </form>
             @elseif($isEnrolled)
                 <div class="alert alert-info">You are enrolled in this course</div>
-            @endif
+            @endif --}}
         </div>
-        
+
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header">
@@ -88,22 +88,22 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Forum section -->
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3>Discussion Forum</h3>
-                    @if(auth()->check() && ($isEnrolled || auth()->user()->id === $course->lecturer_id))
-                        <a href="{{ route('forum.create', ['course' => $course->id]) }}" class="btn btn-primary">New Topic</a>
+                    @if(auth()->check() && (auth()->user()->id === $course->lecturer_id))
+                        <a href="{{ route('topics.create', $course) }}" class="btn btn-primary">New Topic</a>
                     @endif
                 </div>
                 <div class="card-body">
-                    @if(count($course->forumTopics) > 0)
+                    @if($course->forumTopics && count($course->forumTopics) > 0)
                         <div class="list-group">
                             @foreach($course->forumTopics as $topic)
-                                <a href="{{ route('forum.show', $topic) }}" class="list-group-item list-group-item-action">
+                                <a href="{{ route('topics.show', [$course, $topic]) }}" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{ $topic->title }}</h5>
                                         <small>{{ $topic->created_at->diffForHumans() }}</small>

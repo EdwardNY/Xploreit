@@ -75,16 +75,14 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::findOrFail($id);
-        $course->load('videos');
+        $course = Course::with(['videos', 'forumTopics.user'])->findOrFail($id);
 
         if ($course->is_published || (Auth::check() && Auth::id() === $course->lecturer_id)) {
-            $isEnrolled = Auth::check() && $course->isUserEnrolled(Auth::id());
             $isLecturer = Auth::check() && Auth::id() === $course->lecturer_id;
-            
-            return view('courses.show', compact('course', 'isEnrolled', 'isLecturer'));
+
+            return view('courses.show', compact('course', 'isLecturer'));
         }
-        
+
         abort(404);
     }
 
@@ -117,7 +115,8 @@ class CourseController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_published' => 'nullable' // Add validation for is_published
         ]);
 
         // Handle thumbnail update
@@ -125,18 +124,23 @@ class CourseController extends Controller
             if ($course->thumbnail) {
                 Storage::disk('public')->delete($course->thumbnail);
             }
-            
+
             $thumbnailPath = $request->file('thumbnail')->store('course_thumbnails', 'public');
             $validatedData['thumbnail'] = $thumbnailPath;
         }
 
+        // Explicitly handle the is_published checkbox
+        // Convert to boolean: 1 if checked, 0 if unchecked
+        $validatedData['is_published'] = $request->input('is_published') == '1' ? 1 : 0;
+
         $course->update($validatedData);
+
+        // Debug: Add this temporarily to check the value
+        // dd($validatedData['is_published'], $course->fresh()->is_published);
 
         return redirect()->route('courses.show', $course)
             ->with('success', 'Course updated successfully');
-
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -159,4 +163,5 @@ class CourseController extends Controller
             ->with('success', 'Course deleted successfully');
 
     }
+
 }
